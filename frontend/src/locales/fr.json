@@ -1,0 +1,116 @@
+{
+  "app": {
+    "name": "DIGISKUL",
+    "subtitle": "Système de Gestion Scolaire Intelligent"
+  },
+  "auth": {
+    "login": "Se connecter",
+    "email": "Email ou Téléphone",
+    "password": "Mot de passe",
+    "remember": "Se souvenir de moi",
+    "forgotPassword": "Mot de passe oublié?",
+    "signIn": "Se connecter",
+    "signingIn": "Connexion en cours...",
+    "loginSuccess": "Connexion réussie!",
+    "loginFailed": "Échec de la connexion. Veuillez réessayer.",
+    "logout": "Se déconnecter",
+    "logoutSuccess": "Déconnexion réussie"
+  },
+  "dashboard": {
+    "title": "Tableau de bord",
+    "welcome": "Bon retour! Voici un aperçu de votre classe",
+    "totalStudents": "Total des Étudiants",
+    "attendanceToday": "Présence Aujourd'hui",
+    "pendingAssessments": "Évaluations en Attente",
+    "activeTerm": "Actif ce trimestre",
+    "fromYesterday": "depuis hier",
+    "dueThisWeek": "Dû cette semaine",
+    "quickActions": "Actions Rapides",
+    "markAttendance": "Marquer la Présence",
+    "recordGrades": "Enregistrer les Notes",
+    "viewReports": "Voir les Rapports",
+    "recentActivity": "Activité Récente",
+    "classPerformance": "Performance de la Classe",
+    "averageGrade": "Note Moyenne",
+    "attendanceRate": "Taux de Présence"
+  },
+  "students": {
+    "title": "Étudiants",
+    "subtitle": "Gérer les dossiers et informations des étudiants",
+    "addStudent": "Ajouter un Étudiant",
+    "search": "Rechercher par nom ou numéro d'inscription...",
+    "registrationNo": "N° d'Inscription",
+    "attendanceRate": "Taux de Présence",
+    "averageGrade": "Note Moyenne",
+    "actions": "Actions",
+    "view": "Voir",
+    "edit": "Modifier"
+  },
+  "attendance": {
+    "title": "Présence",
+    "subtitle": "Suivre la présence quotidienne des étudiants",
+    "selectDate": "Sélectionner la Date",
+    "attendance": "Présence",
+    "studentsPresent": "étudiants présents",
+    "allPresent": "Tous Présents",
+    "allAbsent": "Tous Absents",
+    "present": "Présent",
+    "absent": "Absent",
+    "saveAttendance": "Enregistrer la Présence",
+    "saving": "Enregistrement...",
+    "saved": "Présence enregistrée avec succès!",
+    "savedOffline": "Présence enregistrée hors ligne. Sera synchronisée en ligne."
+  },
+  "grades": {
+    "title": "Notes",
+    "subtitle": "Enregistrer et gérer les évaluations",
+    "gradeEntry": "Saisie des Notes",
+    "summary": "Résumé",
+    "saveGrades": "Enregistrer les Notes",
+    "saving": "Enregistrement...",
+    "saved": "Notes enregistrées avec succès!",
+    "savedOffline": "Notes enregistrées hors ligne. Sera synchronisées en ligne."
+  },
+  "reports": {
+    "title": "Rapports",
+    "subtitle": "Générer et exporter les résumés de trimestre",
+    "studentReportCards": "Bulletins d'Étudiants",
+    "classSummary": "Résumé de Classe",
+    "attendanceReport": "Rapport de Présence",
+    "gradeAnalysis": "Analyse des Notes"
+  },
+  "fees": {
+    "title": "Gestion des Frais",
+    "subtitle": "Gérer les frais et paiements des étudiants",
+    "totalFees": "Total des Frais",
+    "paid": "Payé",
+    "outstanding": "En Attente",
+    "debtors": "Débiteurs"
+  },
+  "settings": {
+    "title": "Paramètres",
+    "subtitle": "Gérer votre compte et les préférences du système",
+    "profile": "Paramètres du Profil",
+    "changePassword": "Changer le Mot de passe",
+    "preferences": "Préférences",
+    "language": "Langue",
+    "notifications": "Activer les Notifications"
+  },
+  "common": {
+    "save": "Enregistrer",
+    "cancel": "Annuler",
+    "delete": "Supprimer",
+    "edit": "Modifier",
+    "view": "Voir",
+    "search": "Rechercher",
+    "filter": "Filtrer",
+    "export": "Exporter",
+    "import": "Importer",
+    "loading": "Chargement...",
+    "error": "Une erreur s'est produite",
+    "success": "Opération réussie",
+    "confirm": "Confirmer",
+    "close": "Fermer"
+  }
+}
+

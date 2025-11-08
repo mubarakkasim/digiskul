@@ -1,0 +1,48 @@
+# .gitignore
+
+# Laravel
+/vendor/
+/node_modules/
+.env
+.env.backup
+.phpunit.result.cache
+Homestead.json
+Homestead.yaml
+auth.json
+npm-debug.log
+yarn-error.log
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Build
+/dist/
+/build/
+*.log
+
+# Frontend
+frontend/node_modules/
+frontend/dist/
+frontend/.vite/
+
+# Backend
+backend/vendor/
+backend/storage/logs/*
+backend/storage/framework/cache/*
+backend/storage/framework/sessions/*
+backend/storage/framework/views/*
+backend/bootstrap/cache/*
+
+# AWS
+.terraform/
+*.tfstate
+*.tfstate.*
+

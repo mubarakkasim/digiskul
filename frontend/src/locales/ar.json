@@ -1,0 +1,116 @@
+{
+  "app": {
+    "name": "DIGISKUL",
+    "subtitle": "نظام إدارة المدرسة الذكي"
+  },
+  "auth": {
+    "login": "تسجيل الدخول",
+    "email": "البريد الإلكتروني أو الهاتف",
+    "password": "كلمة المرور",
+    "remember": "تذكرني",
+    "forgotPassword": "نسيت كلمة المرور؟",
+    "signIn": "تسجيل الدخول",
+    "signingIn": "جاري تسجيل الدخول...",
+    "loginSuccess": "تم تسجيل الدخول بنجاح!",
+    "loginFailed": "فشل تسجيل الدخول. يرجى المحاولة مرة أخرى.",
+    "logout": "تسجيل الخروج",
+    "logoutSuccess": "تم تسجيل الخروج بنجاح"
+  },
+  "dashboard": {
+    "title": "لوحة التحكم",
+    "welcome": "مرحباً بعودتك! إليك نظرة عامة على الفصل",
+    "totalStudents": "إجمالي الطلاب",
+    "attendanceToday": "الحضور اليوم",
+    "pendingAssessments": "التقييمات المعلقة",
+    "activeTerm": "نشط هذا الفصل",
+    "fromYesterday": "من أمس",
+    "dueThisWeek": "مستحق هذا الأسبوع",
+    "quickActions": "إجراءات سريعة",
+    "markAttendance": "تسجيل الحضور",
+    "recordGrades": "تسجيل الدرجات",
+    "viewReports": "عرض التقارير",
+    "recentActivity": "النشاط الأخير",
+    "classPerformance": "أداء الفصل",
+    "averageGrade": "متوسط الدرجة",
+    "attendanceRate": "معدل الحضور"
+  },
+  "students": {
+    "title": "الطلاب",
+    "subtitle": "إدارة سجلات ومعلومات الطلاب",
+    "addStudent": "إضافة طالب",
+    "search": "البحث بالاسم أو رقم التسجيل...",
+    "registrationNo": "رقم التسجيل",
+    "attendanceRate": "معدل الحضور",
+    "averageGrade": "متوسط الدرجة",
+    "actions": "إجراءات",
+    "view": "عرض",
+    "edit": "تعديل"
+  },
+  "attendance": {
+    "title": "الحضور",
+    "subtitle": "تتبع حضور الطلاب اليومي",
+    "selectDate": "اختر التاريخ",
+    "attendance": "الحضور",
+    "studentsPresent": "طالب حاضر",
+    "allPresent": "الكل حاضر",
+    "allAbsent": "الكل غائب",
+    "present": "حاضر",
+    "absent": "غائب",
+    "saveAttendance": "حفظ الحضور",
+    "saving": "جاري الحفظ...",
+    "saved": "تم حفظ الحضور بنجاح!",
+    "savedOffline": "تم حفظ الحضور بدون إنترنت. سيتم المزامنة عند الاتصال."
+  },
+  "grades": {
+    "title": "الدرجات",
+    "subtitle": "تسجيل وإدارة التقييمات",
+    "gradeEntry": "إدخال الدرجات",
+    "summary": "الملخص",
+    "saveGrades": "حفظ الدرجات",
+    "saving": "جاري الحفظ...",
+    "saved": "تم حفظ الدرجات بنجاح!",
+    "savedOffline": "تم حفظ الدرجات بدون إنترنت. سيتم المزامنة عند الاتصال."
+  },
+  "reports": {
+    "title": "التقارير",
+    "subtitle": "إنشاء وتصدير ملخصات الفصل",
+    "studentReportCards": "بطاقات تقرير الطلاب",
+    "classSummary": "ملخص الفصل",
+    "attendanceReport": "تقرير الحضور",
+    "gradeAnalysis": "تحليل الدرجات"
+  },
+  "fees": {
+    "title": "إدارة الرسوم",
+    "subtitle": "إدارة رسوم ومدفوعات الطلاب",
+    "totalFees": "إجمالي الرسوم",
+    "paid": "مدفوع",
+    "outstanding": "مستحقة",
+    "debtors": "المدينون"
+  },
+  "settings": {
+    "title": "الإعدادات",
+    "subtitle": "إدارة حسابك وتفضيلات النظام",
+    "profile": "إعدادات الملف الشخصي",
+    "changePassword": "تغيير كلمة المرور",
+    "preferences": "التفضيلات",
+    "language": "اللغة",
+    "notifications": "تفعيل الإشعارات"
+  },
+  "common": {
+    "save": "حفظ",
+    "cancel": "إلغاء",
+    "delete": "حذف",
+    "edit": "تعديل",
+    "view": "عرض",
+    "search": "بحث",
+    "filter": "تصفية",
+    "export": "تصدير",
+    "import": "استيراد",
+    "loading": "جاري التحميل...",
+    "error": "حدث خطأ",
+    "success": "تمت العملية بنجاح",
+    "confirm": "تأكيد",
+    "close": "إغلاق"
+  }
+}
+

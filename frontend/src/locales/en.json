@@ -1,0 +1,116 @@
+{
+  "app": {
+    "name": "DIGISKUL",
+    "subtitle": "Smart School Workflow System"
+  },
+  "auth": {
+    "login": "Sign In",
+    "email": "Email or Phone",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgotPassword": "Forgot password?",
+    "signIn": "Sign In",
+    "signingIn": "Signing in...",
+    "loginSuccess": "Login successful!",
+    "loginFailed": "Login failed. Please try again.",
+    "logout": "Logout",
+    "logoutSuccess": "Logged out successfully"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Welcome back! Here's your class overview",
+    "totalStudents": "Total Students",
+    "attendanceToday": "Attendance Today",
+    "pendingAssessments": "Pending Assessments",
+    "activeTerm": "Active this term",
+    "fromYesterday": "from yesterday",
+    "dueThisWeek": "Due this week",
+    "quickActions": "Quick Actions",
+    "markAttendance": "Mark Attendance",
+    "recordGrades": "Record Grades",
+    "viewReports": "View Reports",
+    "recentActivity": "Recent Activity",
+    "classPerformance": "Class Performance",
+    "averageGrade": "Average Grade",
+    "attendanceRate": "Attendance Rate"
+  },
+  "students": {
+    "title": "Students",
+    "subtitle": "Manage student records and information",
+    "addStudent": "Add Student",
+    "search": "Search by name or registration number...",
+    "registrationNo": "Registration No.",
+    "attendanceRate": "Attendance Rate",
+    "averageGrade": "Average Grade",
+    "actions": "Actions",
+    "view": "View",
+    "edit": "Edit"
+  },
+  "attendance": {
+    "title": "Attendance",
+    "subtitle": "Track daily student attendance",
+    "selectDate": "Select Date",
+    "attendance": "Attendance",
+    "studentsPresent": "students present",
+    "allPresent": "All Present",
+    "allAbsent": "All Absent",
+    "present": "Present",
+    "absent": "Absent",
+    "saveAttendance": "Save Attendance",
+    "saving": "Saving...",
+    "saved": "Attendance saved successfully!",
+    "savedOffline": "Attendance saved offline. Will sync when online."
+  },
+  "grades": {
+    "title": "Grades",
+    "subtitle": "Record and manage student assessments",
+    "gradeEntry": "Grade Entry",
+    "summary": "Summary",
+    "saveGrades": "Save Grades",
+    "saving": "Saving...",
+    "saved": "Grades saved successfully!",
+    "savedOffline": "Grades saved offline. Will sync when online."
+  },
+  "reports": {
+    "title": "Reports",
+    "subtitle": "Generate and export term summaries",
+    "studentReportCards": "Student Report Cards",
+    "classSummary": "Class Summary",
+    "attendanceReport": "Attendance Report",
+    "gradeAnalysis": "Grade Analysis"
+  },
+  "fees": {
+    "title": "Fees Management",
+    "subtitle": "Manage student fees and payments",
+    "totalFees": "Total Fees",
+    "paid": "Paid",
+    "outstanding": "Outstanding",
+    "debtors": "Debtors"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "Manage your account and system preferences",
+    "profile": "Profile Settings",
+    "changePassword": "Change Password",
+    "preferences": "Preferences",
+    "language": "Language",
+    "notifications": "Enable Notifications"
+  },
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "view": "View",
+    "search": "Search",
+    "filter": "Filter",
+    "export": "Export",
+    "import": "Import",
+    "loading": "Loading...",
+    "error": "An error occurred",
+    "success": "Operation successful",
+    "confirm": "Confirm",
+    "close": "Close"
+  }
+}
+

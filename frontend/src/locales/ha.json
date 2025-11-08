@@ -1,0 +1,116 @@
+{
+  "app": {
+    "name": "DIGISKUL",
+    "subtitle": "Tsarin Aiki na Makaranta Mai Hankali"
+  },
+  "auth": {
+    "login": "Shiga",
+    "email": "Imel ko Wayar",
+    "password": "Kalmar Sirri",
+    "remember": "Tuna ni",
+    "forgotPassword": "Manta kalmar sirri?",
+    "signIn": "Shiga",
+    "signingIn": "Ana shiga...",
+    "loginSuccess": "An yi nasara!",
+    "loginFailed": "An gaza. Da fatan za a sake gwadawa.",
+    "logout": "Fita",
+    "logoutSuccess": "An fita cikin nasara"
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "welcome": "Barka da dawo! Ga bayanin ajin ku",
+    "totalStudents": "Jimlar Dalibai",
+    "attendanceToday": "Halartar Yau",
+    "pendingAssessments": "Ayyukan Bita da suka Tace",
+    "activeTerm": "Aiki a lokacin nan",
+    "fromYesterday": "daga jiya",
+    "dueThisWeek": "Zai ƙare a wannan makon",
+    "quickActions": "Ayyuka na Gaggawa",
+    "markAttendance": "Yi Halartar",
+    "recordGrades": "Rubuta Maki",
+    "viewReports": "Duba Rahotanni",
+    "recentActivity": "Ayyukan Kwanan Nan",
+    "classPerformance": "Ayyukan Aji",
+    "averageGrade": "Matsakaicin Maki",
+    "attendanceRate": "Yawan Halartar"
+  },
+  "students": {
+    "title": "Dalibai",
+    "subtitle": "Sarrafa bayanan dalibai",
+    "addStudent": "Ƙara Dalibi",
+    "search": "Nemo ta suna ko lambar rajista...",
+    "registrationNo": "Lambar Rajista",
+    "attendanceRate": "Yawan Halartar",
+    "averageGrade": "Matsakaicin Maki",
+    "actions": "Ayyuka",
+    "view": "Duba",
+    "edit": "Gyara"
+  },
+  "attendance": {
+    "title": "Halartar",
+    "subtitle": "Lura da halartar dalibai na yau da kullun",
+    "selectDate": "Zaɓi Kwanan",
+    "attendance": "Halartar",
+    "studentsPresent": "dalibai suna nan",
+    "allPresent": "Duka Suna Nan",
+    "allAbsent": "Babu Kowa",
+    "present": "Yana Nan",
+    "absent": "Babu",
+    "saveAttendance": "Ajiye Halartar",
+    "saving": "Ana ajiyewa...",
+    "saved": "An ajiye halartar cikin nasara!",
+    "savedOffline": "An ajiye halartar ba tare da intanet ba. Za a daidaita idan an samu intanet."
+  },
+  "grades": {
+    "title": "Maki",
+    "subtitle": "Rubuta da sarrafa kimantawa",
+    "gradeEntry": "Shigar da Maki",
+    "summary": "Taƙaitawa",
+    "saveGrades": "Ajiye Maki",
+    "saving": "Ana ajiyewa...",
+    "saved": "An ajiye maki cikin nasara!",
+    "savedOffline": "An ajiye maki ba tare da intanet ba. Za a daidaita idan an samu intanet."
+  },
+  "reports": {
+    "title": "Rahotanni",
+    "subtitle": "Ƙirƙira da fitar da taƙaitaccen lokaci",
+    "studentReportCards": "Katunan Rahoto na Dalibai",
+    "classSummary": "Taƙaitaccen Aji",
+    "attendanceReport": "Rahoton Halartar",
+    "gradeAnalysis": "Binciken Maki"
+  },
+  "fees": {
+    "title": "Gudanar da Kudade",
+    "subtitle": "Sarrafa kuɗaɗen dalibai da biyan kuɗi",
+    "totalFees": "Jimlar Kudade",
+    "paid": "An Biya",
+    "outstanding": "Basa",
+    "debtors": "Masu Bashi"
+  },
+  "settings": {
+    "title": "Saituna",
+    "subtitle": "Sarrafa asusun ku da abubuwan da kuka fi so",
+    "profile": "Saitunan Bayani",
+    "changePassword": "Canza Kalmar Sirri",
+    "preferences": "Abubuwan da Aka Fi So",
+    "language": "Harshe",
+    "notifications": "Kunna Sanarwa"
+  },
+  "common": {
+    "save": "Ajiye",
+    "cancel": "Soke",
+    "delete": "Share",
+    "edit": "Gyara",
+    "view": "Duba",
+    "search": "Nemo",
+    "filter": "Tace",
+    "export": "Fitar",
+    "import": "Shigo",
+    "loading": "Ana lodawa...",
+    "error": "An sami kuskure",
+    "success": "Aiki ya yi nasara",
+    "confirm": "Tabbatar",
+    "close": "Rufe"
+  }
+}
+
