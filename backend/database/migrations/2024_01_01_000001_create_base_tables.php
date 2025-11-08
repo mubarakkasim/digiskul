@@ -167,14 +167,6 @@ return new class extends Migration
 
             $table->index(['school_id', 'device_id']);
         });
-
-        Schema::create('houses', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('school_id')->constrained()->onDelete('cascade');
-            $table->string('name');
-            $table->foreignId('teacher_incharge_id')->nullable()->constrained('users')->onDelete('set null');
-            $table->timestamps();
-        });
     }
 
     public function down(): void
@@ -193,4 +185,3 @@ return new class extends Migration
         Schema::dropIfExists('schools');
     }
 };
-
