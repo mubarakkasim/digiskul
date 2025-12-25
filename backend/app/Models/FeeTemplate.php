@@ -16,13 +16,10 @@ class FeeTemplate extends Model
         'total_amount',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'components' => 'array',
-            'total_amount' => 'decimal:2',
-        ];
-    }
+    protected $casts = [
+        'components' => 'array',
+        'total_amount' => 'decimal:2',
+    ];
 
     public function school()
     {

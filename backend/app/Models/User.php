@@ -30,16 +30,12 @@ class User extends Authenticatable
         'remember_token',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-            'meta' => 'array',
-            'last_login' => 'datetime',
-            'active' => 'boolean',
-        ];
-    }
+    protected $casts = [
+        'email_verified_at' => 'datetime',
+        'meta' => 'array',
+        'last_login' => 'datetime',
+        'active' => 'boolean',
+    ];
 
     public function school()
     {

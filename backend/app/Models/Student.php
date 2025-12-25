@@ -21,14 +21,11 @@ class Student extends Model
         'meta',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'parent_info' => 'array',
-            'health_info' => 'array',
-            'meta' => 'array',
-        ];
-    }
+    protected $casts = [
+        'parent_info' => 'array',
+        'health_info' => 'array',
+        'meta' => 'array',
+    ];
 
     public function school()
     {

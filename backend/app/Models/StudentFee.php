@@ -18,14 +18,11 @@ class StudentFee extends Model
         'balance',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'total_due' => 'decimal:2',
-            'balance' => 'decimal:2',
-            'scholarships' => 'array',
-        ];
-    }
+    protected $casts = [
+        'total_due' => 'decimal:2',
+        'balance' => 'decimal:2',
+        'scholarships' => 'array',
+    ];
 
     public function school()
     {

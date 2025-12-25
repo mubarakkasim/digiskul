@@ -34,19 +34,19 @@ class DatabaseSeeder extends Seeder
         ];
 
         foreach ($permissions as $permission) {
-            Permission::create(['name' => $permission]);
+            Permission::firstOrCreate(['name' => $permission]);
         }
 
         // Create roles
-        $superAdminRole = Role::create(['name' => 'super_admin']);
-        $adminRole = Role::create(['name' => 'school_admin']);
-        $teacherRole = Role::create(['name' => 'teacher']);
-        $bursarRole = Role::create(['name' => 'bursar']);
-        $parentRole = Role::create(['name' => 'parent']);
+        $superAdminRole = Role::firstOrCreate(['name' => 'super_admin']);
+        $adminRole = Role::firstOrCreate(['name' => 'school_admin']);
+        $teacherRole = Role::firstOrCreate(['name' => 'teacher']);
+        $bursarRole = Role::firstOrCreate(['name' => 'bursar']);
+        $parentRole = Role::firstOrCreate(['name' => 'parent']);
 
         // Assign permissions to roles
-        $adminRole->givePermissionTo(Permission::all());
-        $teacherRole->givePermissionTo([
+        $adminRole->syncPermissions(Permission::all());
+        $teacherRole->syncPermissions([
             'view students',
             'view attendance',
             'mark attendance',
@@ -54,14 +54,14 @@ class DatabaseSeeder extends Seeder
             'record grades',
             'view reports',
         ]);
-        $bursarRole->givePermissionTo([
+        $bursarRole->syncPermissions([
             'view students',
             'view fees',
             'manage fees',
             'view payments',
             'record payments',
         ]);
-        $parentRole->givePermissionTo([
+        $parentRole->syncPermissions([
             'view students',
             'view attendance',
             'view grades',
@@ -70,44 +70,58 @@ class DatabaseSeeder extends Seeder
         ]);
 
         // Create super admin user
-        $superAdmin = User::create([
-            'name' => 'Super Admin',
-            'email' => 'admin@digiskul.app',
-            'password' => Hash::make('password'),
-            'role' => 'super_admin',
-            'active' => true,
-        ]);
-        $superAdmin->assignRole($superAdminRole);
+        $superAdmin = User::firstOrCreate(
+            ['email' => 'admin@digiskul.app'],
+            [
+                'name' => 'Super Admin',
+                'password' => Hash::make('password'),
+                'role' => 'super_admin',
+                'active' => true,
+            ]
+        );
+        if (!$superAdmin->hasRole('super_admin')) {
+            $superAdmin->assignRole($superAdminRole);
+        }
 
         // Create sample school
-        $school = School::create([
-            'name' => 'Nur Light Academy',
-            'subdomain' => 'nurlight',
-            'active' => true,
-            'license_valid_until' => now()->addYear(),
-        ]);
+        $school = School::firstOrCreate(
+            ['subdomain' => 'nurlight'],
+            [
+                'name' => 'Nur Light Academy',
+                'active' => true,
+                'license_valid_until' => now()->addYear(),
+            ]
+        );
 
         // Create school admin
-        $admin = User::create([
-            'school_id' => $school->id,
-            'name' => 'School Admin',
-            'email' => 'admin@nurlight.digiskul.app',
-            'password' => Hash::make('password'),
-            'role' => 'school_admin',
-            'active' => true,
-        ]);
-        $admin->assignRole($adminRole);
+        $admin = User::firstOrCreate(
+            ['email' => 'admin@nurlight.digiskul.app'],
+            [
+                'school_id' => $school->id,
+                'name' => 'School Admin',
+                'password' => Hash::make('password'),
+                'role' => 'school_admin',
+                'active' => true,
+            ]
+        );
+        if (!$admin->hasRole('school_admin')) {
+            $admin->assignRole($adminRole);
+        }
 
         // Create sample teacher
-        $teacher = User::create([
-            'school_id' => $school->id,
-            'name' => 'John Teacher',
-            'email' => 'teacher@nurlight.digiskul.app',
-            'password' => Hash::make('password'),
-            'role' => 'teacher',
-            'active' => true,
-        ]);
-        $teacher->assignRole($teacherRole);
+        $teacher = User::firstOrCreate(
+            ['email' => 'teacher@nurlight.digiskul.app'],
+            [
+                'school_id' => $school->id,
+                'name' => 'John Teacher',
+                'password' => Hash::make('password'),
+                'role' => 'teacher',
+                'active' => true,
+            ]
+        );
+        if (!$teacher->hasRole('teacher')) {
+            $teacher->assignRole($teacherRole);
+        }
     }
 }
 

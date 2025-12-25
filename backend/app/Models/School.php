@@ -13,6 +13,8 @@ class School extends BaseTenant implements TenantWithDatabase
 {
     use HasFactory, HasDatabase, HasDomains;
 
+    protected $table = 'schools';
+
     protected $fillable = [
         'name',
         'address',
@@ -27,14 +29,11 @@ class School extends BaseTenant implements TenantWithDatabase
         'meta',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'license_valid_until' => 'datetime',
-            'active' => 'boolean',
-            'meta' => 'array',
-        ];
-    }
+    protected $casts = [
+        'license_valid_until' => 'datetime',
+        'active' => 'boolean',
+        'meta' => 'array',
+    ];
 
     public function users()
     {

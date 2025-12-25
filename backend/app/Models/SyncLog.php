@@ -18,13 +18,10 @@ class SyncLog extends Model
         'server_ts',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'payload' => 'array',
-            'server_ts' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'payload' => 'array',
+        'server_ts' => 'datetime',
+    ];
 
     public function school()
     {

@@ -23,13 +23,10 @@ class Grade extends Model
         'device_tx_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'score' => 'decimal:2',
-            'synced_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'score' => 'decimal:2',
+        'synced_at' => 'datetime',
+    ];
 
     public function school()
     {

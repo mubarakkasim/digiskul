@@ -21,13 +21,10 @@ class Attendance extends Model
         'device_tx_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'date' => 'date',
-            'synced_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'date' => 'date',
+        'synced_at' => 'datetime',
+    ];
 
     public function school()
     {

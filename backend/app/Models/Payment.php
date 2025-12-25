@@ -22,14 +22,11 @@ class Payment extends Model
         'device_tx_id',
     ];
 
-    protected function casts(): array
-    {
-        return [
-            'amount' => 'decimal:2',
-            'payment_date' => 'date',
-            'synced_at' => 'datetime',
-        ];
-    }
+    protected $casts = [
+        'amount' => 'decimal:2',
+        'payment_date' => 'date',
+        'synced_at' => 'datetime',
+    ];
 
     public function school()
     {
