@@ -13,6 +13,9 @@ use App\Http\Controllers\Api\V1\PaymentsController;
 use App\Http\Controllers\Api\V1\ReportCardsController;
 use App\Http\Controllers\Api\V1\ClassController;
 use App\Http\Controllers\Api\V1\DebtorsController;
+use App\Http\Controllers\Api\V1\TimetableController;
+use App\Http\Controllers\Api\V1\DutyController;
+use App\Http\Controllers\Api\V1\NonAcademicController;
 
 Route::prefix('v1')->group(function () {
     // Public routes
@@ -64,6 +67,23 @@ Route::prefix('v1')->group(function () {
 
         // Classes
         Route::get('/classes', [ClassController::class, 'index']);
+
+        // Timetable
+        Route::get('/timetable', [TimetableController::class, 'index']);
+        Route::post('/timetable', [TimetableController::class, 'store']);
+        Route::put('/timetable/{id}', [TimetableController::class, 'update']);
+        Route::delete('/timetable/{id}', [TimetableController::class, 'destroy']);
+
+        // Duties
+        Route::get('/duties', [DutyController::class, 'index']);
+        Route::post('/duties', [DutyController::class, 'store']);
+        Route::put('/duties/{id}', [DutyController::class, 'update']);
+        Route::delete('/duties/{id}', [DutyController::class, 'destroy']);
+
+        // Non-Academic Performance
+        Route::get('/non-academic', [NonAcademicController::class, 'index']);
+        Route::post('/non-academic', [NonAcademicController::class, 'store']);
+        Route::get('/non-academic/student/{student_id}', [NonAcademicController::class, 'show']);
 
         // Debtors
         Route::get('/debtors', [DebtorsController::class, 'index']);

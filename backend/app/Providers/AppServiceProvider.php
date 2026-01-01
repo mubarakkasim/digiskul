@@ -17,16 +17,19 @@ class AppServiceProvider extends ServiceProvider
 
     protected function configureTenancyRoutes(): void
     {
+        \Illuminate\Support\Facades\Log::info('Configuring tenancy routes');
         Route::middleware([
             'web',
             InitializeTenancyByDomain::class,
             PreventAccessFromCentralDomains::class,
         ])->group(base_path('routes/web.php'));
 
+/*
         Route::middleware([
             'api',
             InitializeTenancyByDomain::class,
         ])->prefix('api')->group(base_path('routes/api.php'));
+*/
     }
 }
 

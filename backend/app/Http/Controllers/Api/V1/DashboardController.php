@@ -13,7 +13,8 @@ class DashboardController extends Controller
 {
     public function stats(Request $request)
     {
-        $schoolId = $request->user()->school_id;
+        $user = $request->user();
+        $schoolId = $user->school_id;
 
         $totalStudents = Student::forSchool($schoolId)->count();
         
@@ -27,7 +28,22 @@ class DashboardController extends Controller
             ? round(($presentCount / $totalAttendance) * 100) 
             : 0;
 
-        // Mock pending assessments - should be calculated based on actual assessments
+        // Fetch today's periods from timetable for this teacher
+        $dayName = strtolower(today()->format('l'));
+        $todayPeriods = \App\Models\Timetable::forSchool($schoolId)
+            ->where('teacher_id', $user->id)
+            ->where('day', $dayName)
+            ->with(['classModel', 'subject'])
+            ->orderBy('period')
+            ->get();
+
+        // Fetch today's duty for this teacher
+        $todayDuty = \App\Models\Duty::forSchool($schoolId)
+            ->where('teacher_id', $user->id)
+            ->where('date', today())
+            ->first();
+
+        // Mock pending assessments
         $pendingAssessments = 3;
 
         return response()->json([
@@ -35,6 +51,8 @@ class DashboardController extends Controller
                 'totalStudents' => $totalStudents,
                 'attendanceToday' => $attendanceToday,
                 'pendingAssessments' => $pendingAssessments,
+                'todayPeriods' => $todayPeriods,
+                'todayDuty' => $todayDuty,
             ],
         ]);
     }

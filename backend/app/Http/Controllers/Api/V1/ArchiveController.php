@@ -13,31 +13,69 @@ class ArchiveController extends Controller
     {
         $schoolId = $request->user()->school_id;
         
-        // Fetch archived terms
-        // This would query an archives table or storage
+        $archives = \App\Models\ArchiveModel::forSchool($schoolId)
+            ->with('classModel')
+            ->orderBy('created_at', 'desc')
+            ->get();
         
         return response()->json([
-            'data' => [
-                [
-                    'id' => 1,
-                    'term' => 'Third Term',
-                    'session' => '2023/2024',
-                    'archived_at' => '2024-09-15',
-                    'student_count' => 42,
-                    'size' => '2.4 MB',
-                ],
-            ],
+            'data' => $archives
         ]);
     }
 
     public function archiveCurrentTerm(Request $request)
     {
-        $schoolId = $request->user()->school_id;
+        $request->validate([
+            'term' => 'required|string',
+            'session' => 'required|string',
+            'class_id' => 'sometimes|exists:classes,id',
+        ]);
+
+        $user = $request->user();
+        $schoolId = $user->school_id;
         
-        // Archive current term data
-        // Implementation would backup data and mark as archived
+        // Gather data for archive
+        $students = \App\Models\Student::forSchool($schoolId);
+        if ($request->has('class_id')) {
+            $students->where('class_id', $request->class_id);
+        }
+        $students = $students->get();
+
+        $archiveData = [];
+
+        foreach ($students as $student) {
+            $grades = \App\Models\Grade::forSchool($schoolId)
+                ->where('student_id', $student->id)
+                ->where('term', $request->term)
+                ->where('session', $request->session)
+                ->with('subject')
+                ->get();
+
+            $nonAcademic = \App\Models\NonAcademicPerformance::forSchool($schoolId)
+                ->where('student_id', $student->id)
+                ->where('term', $request->term)
+                ->where('session', $request->session)
+                ->first();
+
+            $archiveData[] = [
+                'student' => $student,
+                'grades' => $grades,
+                'non_academic' => $nonAcademic,
+            ];
+        }
+
+        $archive = \App\Models\ArchiveModel::create([
+            'school_id' => $schoolId,
+            'term' => $request->term,
+            'session' => $request->session,
+            'class_id' => $request->class_id ?? null,
+            'serialized_data' => $archiveData,
+        ]);
         
-        return response()->json(['message' => 'Current term archived successfully']);
+        return response()->json([
+            'message' => 'Term archived successfully',
+            'data' => $archive
+        ]);
     }
 
     public function download($id)

@@ -43,6 +43,16 @@ const routes = [
         component: () => import('../views/attendance/AttendancePage.vue')
       },
       {
+        path: '/timetable',
+        name: 'Timetable',
+        component: () => import('../views/timetable/TimetablePage.vue')
+      },
+      {
+        path: '/duties',
+        name: 'Duties',
+        component: () => import('../views/duties/DutyRoster.vue')
+      },
+      {
         path: '/grades',
         name: 'Grades',
         component: () => import('../views/grades/GradesPage.vue')
@@ -93,7 +103,7 @@ const router = createRouter({
 
 router.beforeEach((to, from, next) => {
   const authStore = useAuthStore()
-  
+
   // Check if route requires authentication
   if (to.meta.requiresAuth) {
     // Check if user is authenticated
@@ -101,7 +111,7 @@ router.beforeEach((to, from, next) => {
       // Try to initialize user from localStorage
       const storedUser = localStorage.getItem('user')
       const storedToken = localStorage.getItem('auth_token')
-      
+
       if (storedToken && storedUser) {
         try {
           authStore.setToken(storedToken)

@@ -17,9 +17,14 @@ class AuthController extends Controller
             'password' => 'required|string',
         ]);
 
+        \Illuminate\Support\Facades\Log::info('Login attempt', ['email' => $request->email]);
         $user = User::where('email', $request->email)
             ->orWhere('phone', $request->email)
             ->first();
+
+        if (!$user) {
+            \Illuminate\Support\Facades\Log::warning('User not found', ['email' => $request->email]);
+        }
 
         if (!$user || !Hash::check($request->password, $user->password)) {
             throw ValidationException::withMessages([
