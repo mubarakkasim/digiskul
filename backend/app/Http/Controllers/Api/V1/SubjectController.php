@@ -3,30 +3,30 @@
 namespace App\Http\Controllers\Api\V1;
 
 use App\Http\Controllers\Controller;
-use App\Models\ClassModel;
+use App\Models\Subject;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Validator;
 
-class ClassController extends Controller
+class SubjectController extends Controller
 {
     public function index(Request $request)
     {
         $schoolId = $request->user()->school_id;
         
-        $classes = ClassModel::forSchool($schoolId)
-            ->withCount('students')
-            ->with('teacher:id,name')
+        $subjects = Subject::where('school_id', $schoolId)
+            ->withCount('classes')
+            ->orderBy('name')
             ->get();
 
-        return response()->json(['data' => $classes]);
+        return response()->json(['data' => $subjects]);
     }
 
     public function store(Request $request)
     {
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'arm' => 'nullable|string|max:50',
-            'teacher_id' => 'nullable|integer|exists:users,id',
+            'code' => 'nullable|string|max:20',
+            'type' => 'required|in:core,elective',
             'description' => 'nullable|string|max:500'
         ]);
 
@@ -37,17 +37,17 @@ class ClassController extends Controller
             ], 422);
         }
 
-        $class = ClassModel::create([
+        $subject = Subject::create([
             'school_id' => $request->user()->school_id,
             'name' => $request->name,
-            'arm' => $request->arm,
-            'teacher_id' => $request->teacher_id,
+            'code' => $request->code,
+            'type' => $request->type ?? 'core',
             'description' => $request->description
         ]);
 
         return response()->json([
-            'message' => 'Class created successfully',
-            'data' => $class
+            'message' => 'Subject created successfully',
+            'data' => $subject
         ], 201);
     }
 
@@ -55,24 +55,23 @@ class ClassController extends Controller
     {
         $schoolId = $request->user()->school_id;
         
-        $class = ClassModel::forSchool($schoolId)
-            ->withCount('students')
-            ->with(['teacher:id,name', 'students'])
+        $subject = Subject::where('school_id', $schoolId)
+            ->withCount('classes')
             ->findOrFail($id);
 
-        return response()->json(['data' => $class]);
+        return response()->json(['data' => $subject]);
     }
 
     public function update(Request $request, $id)
     {
         $schoolId = $request->user()->school_id;
         
-        $class = ClassModel::forSchool($schoolId)->findOrFail($id);
+        $subject = Subject::where('school_id', $schoolId)->findOrFail($id);
 
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'arm' => 'nullable|string|max:50',
-            'teacher_id' => 'nullable|integer|exists:users,id',
+            'code' => 'nullable|string|max:20',
+            'type' => 'required|in:core,elective',
             'description' => 'nullable|string|max:500'
         ]);
 
@@ -83,16 +82,16 @@ class ClassController extends Controller
             ], 422);
         }
 
-        $class->update([
+        $subject->update([
             'name' => $request->name,
-            'arm' => $request->arm,
-            'teacher_id' => $request->teacher_id,
+            'code' => $request->code,
+            'type' => $request->type ?? 'core',
             'description' => $request->description
         ]);
 
         return response()->json([
-            'message' => 'Class updated successfully',
-            'data' => $class
+            'message' => 'Subject updated successfully',
+            'data' => $subject
         ]);
     }
 
@@ -100,20 +99,14 @@ class ClassController extends Controller
     {
         $schoolId = $request->user()->school_id;
         
-        $class = ClassModel::forSchool($schoolId)->findOrFail($id);
+        $subject = Subject::where('school_id', $schoolId)->findOrFail($id);
 
-        // Check if class has students
-        if ($class->students()->count() > 0) {
-            return response()->json([
-                'message' => 'Cannot delete class with enrolled students. Please reassign students first.'
-            ], 422);
-        }
-
-        $class->delete();
+        // Check if subject is being used in timetable or grades
+        // For now, just delete
+        $subject->delete();
 
         return response()->json([
-            'message' => 'Class deleted successfully'
+            'message' => 'Subject deleted successfully'
         ]);
     }
 }
-

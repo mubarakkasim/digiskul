@@ -16,6 +16,7 @@ use App\Http\Controllers\Api\V1\DebtorsController;
 use App\Http\Controllers\Api\V1\TimetableController;
 use App\Http\Controllers\Api\V1\DutyController;
 use App\Http\Controllers\Api\V1\NonAcademicController;
+use App\Http\Controllers\Api\V1\SubjectController;
 
 Route::prefix('v1')->group(function () {
     // Public routes
@@ -67,6 +68,17 @@ Route::prefix('v1')->group(function () {
 
         // Classes
         Route::get('/classes', [ClassController::class, 'index']);
+        Route::post('/classes', [ClassController::class, 'store']);
+        Route::get('/classes/{id}', [ClassController::class, 'show']);
+        Route::put('/classes/{id}', [ClassController::class, 'update']);
+        Route::delete('/classes/{id}', [ClassController::class, 'destroy']);
+
+        // Subjects
+        Route::get('/subjects', [SubjectController::class, 'index']);
+        Route::post('/subjects', [SubjectController::class, 'store']);
+        Route::get('/subjects/{id}', [SubjectController::class, 'show']);
+        Route::put('/subjects/{id}', [SubjectController::class, 'update']);
+        Route::delete('/subjects/{id}', [SubjectController::class, 'destroy']);
 
         // Timetable
         Route::get('/timetable', [TimetableController::class, 'index']);

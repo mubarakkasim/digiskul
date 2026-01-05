@@ -13,6 +13,8 @@ class Subject extends Model
         'school_id',
         'name',
         'code',
+        'type',
+        'description',
     ];
 
     public function school()
@@ -25,9 +27,20 @@ class Subject extends Model
         return $this->hasMany(Grade::class);
     }
 
+    public function classes()
+    {
+        return $this->belongsToMany(ClassModel::class, 'class_subject', 'subject_id', 'class_id');
+    }
+
+    public function timetables()
+    {
+        return $this->hasMany(Timetable::class);
+    }
+
     public function scopeForSchool($query, $schoolId)
     {
         return $query->where('school_id', $schoolId);
     }
 }
+
 

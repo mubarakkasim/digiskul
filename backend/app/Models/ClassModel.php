@@ -18,6 +18,9 @@ class ClassModel extends Model
         'level',
         'house_id',
         'metadata',
+        'arm',
+        'teacher_id',
+        'description',
     ];
 
     protected $casts = [
@@ -39,9 +42,20 @@ class ClassModel extends Model
         return $this->belongsToMany(Subject::class, 'class_subject');
     }
 
+    public function teacher()
+    {
+        return $this->belongsTo(User::class, 'teacher_id');
+    }
+
+    public function timetables()
+    {
+        return $this->hasMany(Timetable::class, 'class_id');
+    }
+
     public function scopeForSchool($query, $schoolId)
     {
         return $query->where('school_id', $schoolId);
     }
 }
+
 

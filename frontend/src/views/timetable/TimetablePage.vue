@@ -176,19 +176,32 @@ const fetchTimetable = async () => {
 }
 
 const fetchMetadata = async () => {
+  // Fetch classes
   try {
-    // These should ideally be in a central store
-    const [cRes, tRes, sRes] = await Promise.all([
-      axios.get(`${API_BASE_URL}/classes`),
-      axios.get(`${API_BASE_URL}/subjects`), // Assuming subjects API exists
-      axios.get(`${API_BASE_URL}/students`) // Using students to get school-related data for now or a meta endpoint
-    ])
+    const cRes = await axios.get(`${API_BASE_URL}/classes`)
     classes.value = cRes.data.data || []
-    subjects.value = tRes.data.data || []
-    // For teachers, we might need a specific endpoint, using a placeholder for now
-    teachers.value = [{ id: authStore.user.id, name: authStore.user.name }]
   } catch (error) {
-    console.error('Failed to load metadata')
+    console.error('Failed to load classes')
+    classes.value = []
+  }
+
+  // Fetch subjects
+  try {
+    const sRes = await axios.get(`${API_BASE_URL}/subjects`)
+    subjects.value = sRes.data.data || []
+  } catch (error) {
+    console.error('Failed to load subjects')
+    subjects.value = []
+  }
+
+  // For teachers, use the current user as a fallback
+  // In a real app, you might have a teachers endpoint
+  try {
+    const tRes = await axios.get(`${API_BASE_URL}/teachers`)
+    teachers.value = tRes.data.data || []
+  } catch (error) {
+    // Fallback to current user if no teachers endpoint exists
+    teachers.value = [{ id: authStore.user.id, name: authStore.user.name }]
   }
 }
 
