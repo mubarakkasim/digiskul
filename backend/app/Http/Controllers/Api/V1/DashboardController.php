@@ -11,6 +11,7 @@ use App\Models\Timetable;
 use App\Models\Duty;
 use App\Models\User;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Log;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
@@ -20,27 +21,110 @@ class DashboardController extends Controller
      */
     public function stats(Request $request)
     {
-        $user = $request->user();
-        $role = $user->role;
+        try {
+            $user = $request->user();
+            
+            if (!$user) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'User not found',
+                ], 401);
+            }
+            
+            $role = $user->role;
+            $schoolId = $user->school_id;
+            
+            Log::info('Dashboard stats requested', ['user_id' => $user->id, 'role' => $role]);
 
-        return match($role) {
-            'super_admin' => $this->superAdminStats($request),
-            'school_admin' => $this->schoolAdminStats($request),
-            'teacher' => $this->teacherStats($request),
-            'class_teacher' => $this->classTeacherStats($request),
-            'student' => $this->studentStats($request),
-            'parent' => $this->parentStats($request),
-            'bursar' => $this->bursarStats($request),
-            default => $this->defaultStats($request),
-        };
+            // Build stats based on role
+            $stats = $this->getBaseStats($schoolId);
+            
+            // Add role-specific stats
+            if ($role === 'super_admin') {
+                $stats = array_merge($stats, $this->getSuperAdminStats());
+            } elseif ($role === 'bursar') {
+                $stats = array_merge($stats, $this->getBursarStats($schoolId));
+            } elseif ($role === 'student') {
+                $stats = $this->getStudentStats($user);
+            } elseif ($role === 'parent') {
+                $stats = $this->getParentStats($user);
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $stats,
+                'role' => $role,
+            ]);
+        } catch (\Exception $e) {
+            Log::error('Dashboard stats error: ' . $e->getMessage(), [
+                'trace' => $e->getTraceAsString()
+            ]);
+            
+            return response()->json([
+                'success' => false,
+                'message' => 'Failed to load dashboard data',
+                'error' => config('app.debug') ? $e->getMessage() : null,
+            ], 500);
+        }
     }
 
     /**
-     * Super Admin Dashboard - System-wide overview
+     * Get base stats for most roles
      */
-    protected function superAdminStats(Request $request)
+    protected function getBaseStats($schoolId)
     {
+        $today = Carbon::today();
+        
         $stats = [
+            'totalStudents' => $schoolId ? Student::where('school_id', $schoolId)->count() : 0,
+            'totalTeachers' => $schoolId 
+                ? User::where('school_id', $schoolId)->whereIn('role', ['teacher', 'class_teacher'])->count() 
+                : 0,
+            'totalClasses' => $schoolId 
+                ? \App\Models\ClassModel::where('school_id', $schoolId)->count() 
+                : 0,
+            'attendanceToday' => $this->calculateAttendancePercentage($schoolId, $today),
+            'pendingAssessments' => 0,
+        ];
+
+        // Get today's schedule
+        try {
+            $dayOfWeek = strtolower($today->format('l'));
+            $stats['todayPeriods'] = $schoolId 
+                ? Timetable::where('school_id', $schoolId)
+                    ->where('day', $dayOfWeek)
+                    ->with(['classModel:id,name', 'subject:id,name', 'teacher:id,name'])
+                    ->orderBy('period')
+                    ->limit(10)
+                    ->get()
+                : [];
+        } catch (\Exception $e) {
+            Log::warning('Failed to get today schedule: ' . $e->getMessage());
+            $stats['todayPeriods'] = [];
+        }
+
+        // Get today's duties
+        try {
+            $stats['todayDuties'] = $schoolId 
+                ? Duty::where('school_id', $schoolId)
+                    ->whereDate('date', $today)
+                    ->with('teacher:id,name')
+                    ->get()
+                : [];
+        } catch (\Exception $e) {
+            Log::warning('Failed to get today duties: ' . $e->getMessage());
+            $stats['todayDuties'] = [];
+        }
+
+        return $stats;
+    }
+
+    /**
+     * Get super admin specific stats
+     */
+    protected function getSuperAdminStats()
+    {
+        return [
             'totalSchools' => School::count(),
             'activeSchools' => School::where('active', true)->count(),
             'totalUsers' => User::count(),
@@ -57,250 +141,136 @@ class DashboardController extends Controller
                 'uptime' => '99.9%',
             ],
         ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-            'role' => 'super_admin',
-        ]);
     }
 
     /**
-     * School Admin Dashboard - School-wide overview
+     * Get bursar specific stats
      */
-    protected function schoolAdminStats(Request $request)
+    protected function getBursarStats($schoolId)
     {
-        $schoolId = $request->user()->school_id;
-        $today = Carbon::today();
-
-        $stats = [
-            'totalStudents' => Student::where('school_id', $schoolId)->count(),
-            'totalTeachers' => User::where('school_id', $schoolId)
-                ->whereIn('role', ['teacher', 'class_teacher'])
-                ->count(),
-            'totalClasses' => \App\Models\ClassModel::where('school_id', $schoolId)->count(),
-            'attendanceToday' => $this->calculateAttendancePercentage($schoolId, $today),
-            'pendingAssessments' => $this->countPendingAssessments($schoolId),
-            'todayPeriods' => $this->getTodaySchedule($schoolId, null),
-            'todayDuties' => Duty::where('school_id', $schoolId)
-                ->whereDate('date', $today)
-                ->with('teacher:id,name')
-                ->get(),
-            'recentActivities' => \App\Models\ActivityLog::where('school_id', $schoolId)
-                ->latest()
-                ->take(10)
-                ->with('user:id,name')
-                ->get(['action', 'entity_type', 'description', 'user_id', 'created_at']),
-            'feesSummary' => $this->getFeeSummary($schoolId),
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-            'role' => 'school_admin',
-        ]);
-    }
-
-    /**
-     * Teacher Dashboard - Personal teaching overview
-     */
-    protected function teacherStats(Request $request)
-    {
-        $user = $request->user();
-        $schoolId = $user->school_id;
-        $today = Carbon::today();
-
-        // Get assigned classes
-        $assignedClassIds = $user->assignedClasses()->pluck('classes.id');
+        $stats = [];
         
-        $stats = [
-            'totalStudents' => Student::whereIn('class_id', $assignedClassIds)->count(),
-            'totalClasses' => $assignedClassIds->count(),
-            'attendanceToday' => $this->calculateAttendancePercentage($schoolId, $today, $assignedClassIds),
-            'pendingAssessments' => 0, // To be calculated based on assignments
-            'todayPeriods' => $this->getTodaySchedule($schoolId, $user->id),
-            'todayDuty' => Duty::where('school_id', $schoolId)
-                ->where('teacher_id', $user->id)
-                ->whereDate('date', $today)
-                ->first(),
-            'myClasses' => $user->assignedClasses()
-                ->select('classes.id', 'classes.name', 'classes.section')
-                ->get(),
-            'mySubjects' => $user->teacherAssignments()
-                ->with('subject:id,name,code')
-                ->where('active', true)
-                ->get()
-                ->pluck('subject')
-                ->unique('id')
-                ->values(),
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-            'role' => 'teacher',
-        ]);
-    }
-
-    /**
-     * Class Teacher Dashboard - Extended teacher with class overview
-     */
-    protected function classTeacherStats(Request $request)
-    {
-        $user = $request->user();
-        $schoolId = $user->school_id;
-        $today = Carbon::today();
-
-        // Get class where user is class teacher
-        $myClass = $user->classTeacherOf()->first();
-
-        $baseStats = $this->teacherStats($request)->getData()->data;
-
-        $classStats = [];
-        if ($myClass) {
-            $classStudents = Student::where('class_id', $myClass->id);
+        try {
+            $stats['feesSummary'] = [
+                'total_due' => \App\Models\StudentFee::where('school_id', $schoolId)->sum('total_due') ?? 0,
+                'total_paid' => \App\Models\Payment::where('school_id', $schoolId)->sum('amount') ?? 0,
+                'total_balance' => \App\Models\StudentFee::where('school_id', $schoolId)->sum('balance') ?? 0,
+                'collection_rate' => 0,
+            ];
             
-            $classStats = [
-                'myClassId' => $myClass->id,
-                'myClassName' => $myClass->name . ($myClass->section ? " {$myClass->section}" : ''),
-                'classStudentCount' => $classStudents->count(),
-                'classAttendanceToday' => $this->calculateClassAttendance($schoolId, $myClass->id, $today),
-                'classPerformanceAverage' => $this->calculateClassPerformance($schoolId, $myClass->id),
-                'pendingReportCards' => 0, // Count students without approved report cards
-            ];
-        }
-
-        return response()->json([
-            'success' => true,
-            'data' => array_merge((array)$baseStats, $classStats),
-            'role' => 'class_teacher',
-        ]);
-    }
-
-    /**
-     * Student Dashboard - Personal academic overview
-     */
-    protected function studentStats(Request $request)
-    {
-        $user = $request->user();
-        
-        // Get student profile
-        $student = $user->studentProfile;
-        
-        if (!$student) {
-            return response()->json([
-                'success' => true,
-                'data' => [
-                    'message' => 'No student profile linked to this account',
-                ],
-                'role' => 'student',
-            ]);
-        }
-
-        $schoolId = $user->school_id;
-        $today = Carbon::today();
-
-        $stats = [
-            'profile' => [
-                'name' => $student->full_name,
-                'admission_no' => $student->admission_no,
-                'class' => $student->classModel->name ?? 'N/A',
-            ],
-            'attendance' => [
-                'percentage' => $this->calculateStudentAttendance($student->id),
-                'present_days' => Attendance::where('student_id', $student->id)
-                    ->where('status', 'present')
-                    ->count(),
-                'absent_days' => Attendance::where('student_id', $student->id)
-                    ->where('status', 'absent')
-                    ->count(),
-            ],
-            'performance' => [
-                'average' => $this->calculateStudentPerformance($student->id),
-                'rank' => null, // Calculate rank in class
-            ],
-            'todaySchedule' => $this->getStudentSchedule($student->class_id),
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-            'role' => 'student',
-        ]);
-    }
-
-    /**
-     * Parent Dashboard - Children overview
-     */
-    protected function parentStats(Request $request)
-    {
-        $user = $request->user();
-        
-        $children = $user->linkedStudents()->with(['classModel:id,name'])->get();
-
-        $childrenStats = $children->map(function ($student) {
-            return [
-                'id' => $student->id,
-                'name' => $student->full_name,
-                'admission_no' => $student->admission_no,
-                'class' => $student->classModel->name ?? 'N/A',
-                'attendance_percentage' => $this->calculateStudentAttendance($student->id),
-                'performance_average' => $this->calculateStudentPerformance($student->id),
-            ];
-        });
-
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'children' => $childrenStats,
-                'totalChildren' => $children->count(),
-            ],
-            'role' => 'parent',
-        ]);
-    }
-
-    /**
-     * Bursar Dashboard - Financial overview
-     */
-    protected function bursarStats(Request $request)
-    {
-        $user = $request->user();
-        $schoolId = $user->school_id;
-
-        $stats = [
-            'totalStudents' => Student::where('school_id', $schoolId)->count(),
-            'feesSummary' => $this->getFeeSummary($schoolId),
-            'recentPayments' => \App\Models\Payment::where('school_id', $schoolId)
+            if ($stats['feesSummary']['total_due'] > 0) {
+                $stats['feesSummary']['collection_rate'] = round(
+                    ($stats['feesSummary']['total_paid'] / $stats['feesSummary']['total_due']) * 100
+                );
+            }
+            
+            $stats['debtorsCount'] = \App\Models\StudentFee::where('school_id', $schoolId)
+                ->where('balance', '>', 0)
+                ->count();
+                
+            $stats['recentPayments'] = \App\Models\Payment::where('school_id', $schoolId)
                 ->latest()
                 ->take(10)
                 ->with('student:id,full_name,admission_no')
-                ->get(),
-            'debtorsCount' => \App\Models\StudentFee::where('school_id', $schoolId)
-                ->where('balance', '>', 0)
-                ->count(),
-        ];
-
-        return response()->json([
-            'success' => true,
-            'data' => $stats,
-            'role' => 'bursar',
-        ]);
+                ->get();
+        } catch (\Exception $e) {
+            Log::warning('Failed to get bursar stats: ' . $e->getMessage());
+            $stats['feesSummary'] = ['total_due' => 0, 'total_paid' => 0, 'total_balance' => 0, 'collection_rate' => 0];
+            $stats['debtorsCount'] = 0;
+            $stats['recentPayments'] = [];
+        }
+        
+        return $stats;
     }
 
     /**
-     * Default stats for other roles
+     * Get student specific stats
      */
-    protected function defaultStats(Request $request)
+    protected function getStudentStats($user)
     {
-        return response()->json([
-            'success' => true,
-            'data' => [
-                'totalStudents' => 0,
-                'attendanceToday' => 0,
-                'pendingAssessments' => 0,
+        $stats = [
+            'profile' => [
+                'name' => $user->name,
             ],
-            'role' => $request->user()->role,
-        ]);
+            'attendance' => [
+                'percentage' => 0,
+                'present_days' => 0,
+                'absent_days' => 0,
+            ],
+            'performance' => [
+                'average' => 0,
+                'rank' => null,
+            ],
+            'todaySchedule' => [],
+        ];
+        
+        try {
+            // Get student profile if linked
+            if (method_exists($user, 'studentProfile') && $user->studentProfile) {
+                $student = $user->studentProfile;
+                $stats['profile'] = [
+                    'name' => $student->full_name ?? $user->name,
+                    'admission_no' => $student->admission_no ?? 'N/A',
+                    'class' => $student->classModel->name ?? 'N/A',
+                ];
+                
+                $stats['attendance'] = [
+                    'percentage' => $this->calculateStudentAttendance($student->id),
+                    'present_days' => Attendance::where('student_id', $student->id)->where('status', 'present')->count(),
+                    'absent_days' => Attendance::where('student_id', $student->id)->where('status', 'absent')->count(),
+                ];
+                
+                $stats['performance']['average'] = $this->calculateStudentPerformance($student->id);
+                
+                // Get today's schedule for student's class
+                if ($student->class_id) {
+                    $dayOfWeek = strtolower(Carbon::today()->format('l'));
+                    $stats['todaySchedule'] = Timetable::where('class_id', $student->class_id)
+                        ->where('day', $dayOfWeek)
+                        ->with(['subject:id,name', 'teacher:id,name'])
+                        ->orderBy('period')
+                        ->get();
+                }
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to get student stats: ' . $e->getMessage());
+        }
+        
+        return $stats;
+    }
+
+    /**
+     * Get parent specific stats
+     */
+    protected function getParentStats($user)
+    {
+        $stats = [
+            'children' => [],
+            'totalChildren' => 0,
+        ];
+        
+        try {
+            if (method_exists($user, 'linkedStudents')) {
+                $children = $user->linkedStudents()->with('classModel:id,name')->get();
+                
+                $stats['children'] = $children->map(function ($student) {
+                    return [
+                        'id' => $student->id,
+                        'name' => $student->full_name,
+                        'admission_no' => $student->admission_no,
+                        'class' => $student->classModel->name ?? 'N/A',
+                        'attendance_percentage' => $this->calculateStudentAttendance($student->id),
+                        'performance_average' => $this->calculateStudentPerformance($student->id),
+                    ];
+                });
+                
+                $stats['totalChildren'] = $children->count();
+            }
+        } catch (\Exception $e) {
+            Log::warning('Failed to get parent stats: ' . $e->getMessage());
+        }
+        
+        return $stats;
     }
 
     // ========================================
@@ -309,101 +279,43 @@ class DashboardController extends Controller
 
     protected function calculateAttendancePercentage($schoolId, $date, $classIds = null)
     {
-        $query = Attendance::where('school_id', $schoolId)->whereDate('date', $date);
+        if (!$schoolId) return 0;
         
-        if ($classIds) {
-            $query->whereIn('class_id', $classIds);
+        try {
+            $query = Attendance::where('school_id', $schoolId)->whereDate('date', $date);
+            
+            if ($classIds) {
+                $query->whereIn('class_id', $classIds);
+            }
+
+            $total = $query->count();
+            $present = (clone $query)->where('status', 'present')->count();
+
+            return $total > 0 ? round(($present / $total) * 100) : 0;
+        } catch (\Exception $e) {
+            return 0;
         }
-
-        $total = $query->count();
-        $present = (clone $query)->where('status', 'present')->count();
-
-        return $total > 0 ? round(($present / $total) * 100) : 0;
-    }
-
-    protected function calculateClassAttendance($schoolId, $classId, $date)
-    {
-        $total = Attendance::where('school_id', $schoolId)
-            ->where('class_id', $classId)
-            ->whereDate('date', $date)
-            ->count();
-        
-        $present = Attendance::where('school_id', $schoolId)
-            ->where('class_id', $classId)
-            ->whereDate('date', $date)
-            ->where('status', 'present')
-            ->count();
-
-        return $total > 0 ? round(($present / $total) * 100) : 0;
     }
 
     protected function calculateStudentAttendance($studentId)
     {
-        $total = Attendance::where('student_id', $studentId)->count();
-        $present = Attendance::where('student_id', $studentId)->where('status', 'present')->count();
+        try {
+            $total = Attendance::where('student_id', $studentId)->count();
+            $present = Attendance::where('student_id', $studentId)->where('status', 'present')->count();
 
-        return $total > 0 ? round(($present / $total) * 100) : 0;
-    }
-
-    protected function calculateClassPerformance($schoolId, $classId)
-    {
-        $studentIds = Student::where('class_id', $classId)->pluck('id');
-        
-        $average = Grade::whereIn('student_id', $studentIds)->avg('score');
-
-        return $average ? round($average, 1) : 0;
+            return $total > 0 ? round(($present / $total) * 100) : 0;
+        } catch (\Exception $e) {
+            return 0;
+        }
     }
 
     protected function calculateStudentPerformance($studentId)
     {
-        $average = Grade::where('student_id', $studentId)->avg('score');
-
-        return $average ? round($average, 1) : 0;
-    }
-
-    protected function countPendingAssessments($schoolId)
-    {
-        // Count classes that haven't had recent grade entries
-        return 0; // Implement based on your grading schedule
-    }
-
-    protected function getTodaySchedule($schoolId, $teacherId = null)
-    {
-        $dayOfWeek = strtolower(Carbon::today()->format('l'));
-
-        $query = Timetable::where('school_id', $schoolId)
-            ->where('day', $dayOfWeek)
-            ->with(['classModel:id,name', 'subject:id,name', 'teacher:id,name']);
-
-        if ($teacherId) {
-            $query->where('teacher_id', $teacherId);
+        try {
+            $average = Grade::where('student_id', $studentId)->avg('score');
+            return $average ? round($average, 1) : 0;
+        } catch (\Exception $e) {
+            return 0;
         }
-
-        return $query->orderBy('period')->get();
-    }
-
-    protected function getStudentSchedule($classId)
-    {
-        $dayOfWeek = strtolower(Carbon::today()->format('l'));
-
-        return Timetable::where('class_id', $classId)
-            ->where('day', $dayOfWeek)
-            ->with(['subject:id,name', 'teacher:id,name'])
-            ->orderBy('period')
-            ->get();
-    }
-
-    protected function getFeeSummary($schoolId)
-    {
-        $totalDue = \App\Models\StudentFee::where('school_id', $schoolId)->sum('total_due');
-        $totalPaid = \App\Models\Payment::where('school_id', $schoolId)->sum('amount');
-        $totalBalance = \App\Models\StudentFee::where('school_id', $schoolId)->sum('balance');
-
-        return [
-            'total_due' => $totalDue,
-            'total_paid' => $totalPaid,
-            'total_balance' => $totalBalance,
-            'collection_rate' => $totalDue > 0 ? round(($totalPaid / $totalDue) * 100) : 0,
-        ];
     }
 }

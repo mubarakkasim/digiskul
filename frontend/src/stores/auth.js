@@ -186,8 +186,15 @@ export const useAuthStore = defineStore('auth', () => {
   const login = async (credentials) => {
     loading.value = true
     try {
+      console.log('Attempting login with:', credentials.email)
       const response = await axios.post(`${API_BASE_URL}/auth/login`, credentials)
+      console.log('Login response:', response.data)
+
       const { token: authToken, user: userData } = response.data.data
+
+      if (!authToken || !userData) {
+        throw new Error('Invalid response from server')
+      }
 
       setToken(authToken)
       setUser(userData)
@@ -196,11 +203,26 @@ export const useAuthStore = defineStore('auth', () => {
 
       // Redirect based on role
       const dashboardRoute = getDashboardRoute()
+      console.log('Redirecting to:', dashboardRoute)
       router.push(dashboardRoute)
 
       return { success: true }
     } catch (error) {
-      const message = error.response?.data?.message || 'Login failed. Please try again.'
+      console.error('Login error:', error)
+
+      // Handle Laravel validation errors
+      let message = 'Login failed. Please try again.'
+
+      if (error.response?.data?.errors) {
+        // Laravel validation errors
+        const errors = error.response.data.errors
+        message = Object.values(errors).flat().join(' ')
+      } else if (error.response?.data?.message) {
+        message = error.response.data.message
+      } else if (error.message) {
+        message = error.message
+      }
+
       toast.error(message)
       return { success: false, error: message }
     } finally {

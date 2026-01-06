@@ -28,11 +28,16 @@ Route::prefix('v1')->group(function () {
     // PUBLIC ROUTES (No Authentication Required)
     // ========================================
     Route::post('/auth/login', [AuthController::class, 'login']);
+    
+    // Debug route
+    Route::get('/debug', function () {
+        return response()->json(['status' => 'ok', 'time' => now()]);
+    });
 
     // ========================================
     // PROTECTED ROUTES (Authentication Required)
     // ========================================
-    Route::middleware(['auth:sanctum', 'school.access', 'log.activity'])->group(function () {
+    Route::middleware(['auth:sanctum', 'school.access'])->group(function () {
         
         // --- Auth Routes ---
         Route::post('/auth/logout', [AuthController::class, 'logout']);
