@@ -22,7 +22,11 @@ const routes = [
     children: [
       {
         path: '',
-        redirect: '/dashboard'
+        redirect: to => {
+          const auth = useAuthStore()
+          if (auth.user?.role === 'super_admin') return '/super-admin/dashboard'
+          return '/dashboard'
+        }
       },
 
       // --- COMMON DASHBOARD ---
@@ -37,52 +41,27 @@ const routes = [
       },
 
       // ========================================
-      // SUPER ADMIN ROUTES
+      // LEGACY SUPER ADMIN ROUTES (kept for backward compatibility)
       // ========================================
       {
         path: '/admin/schools',
-        name: 'AdminSchools',
-        component: () => import('../views/admin/SchoolsPage.vue'),
-        meta: {
-          title: 'School Management',
-          roles: ['super_admin']
-        }
+        redirect: '/super-admin/schools'
       },
       {
         path: '/admin/licenses',
-        name: 'AdminLicenses',
-        component: () => import('../views/admin/LicensesPage.vue'),
-        meta: {
-          title: 'License Management',
-          roles: ['super_admin']
-        }
+        redirect: '/super-admin/licenses'
       },
       {
         path: '/admin/system-settings',
-        name: 'SystemSettings',
-        component: () => import('../views/admin/SystemSettingsPage.vue'),
-        meta: {
-          title: 'System Settings',
-          roles: ['super_admin']
-        }
+        redirect: '/super-admin/settings'
       },
       {
         path: '/admin/activity-logs',
-        name: 'ActivityLogs',
-        component: () => import('../views/admin/ActivityLogsPage.vue'),
-        meta: {
-          title: 'Activity Logs',
-          roles: ['super_admin']
-        }
+        redirect: '/super-admin/logs'
       },
       {
         path: '/admin/analytics',
-        name: 'SystemAnalytics',
-        component: () => import('../views/admin/SystemAnalyticsPage.vue'),
-        meta: {
-          title: 'System Analytics',
-          roles: ['super_admin']
-        }
+        redirect: '/super-admin/analytics'
       },
 
       // ========================================
@@ -386,6 +365,87 @@ const routes = [
           roles: ['bursar']
         }
       },
+    ]
+  },
+
+  // ========================================
+  // SUPER ADMIN PANEL (Dedicated Layout)
+  // ========================================
+  {
+    path: '/super-admin',
+    component: () => import('../layouts/SuperAdminLayout.vue'),
+    meta: { requiresAuth: true, roles: ['super_admin'] },
+    children: [
+      {
+        path: '',
+        redirect: '/super-admin/dashboard'
+      },
+      {
+        path: 'dashboard',
+        name: 'SuperAdminDashboard',
+        component: () => import('../views/super-admin/Dashboard.vue'),
+        meta: { title: 'Super Admin Dashboard', roles: ['super_admin'] }
+      },
+      {
+        path: 'schools',
+        name: 'SuperAdminSchools',
+        component: () => import('../views/super-admin/Schools.vue'),
+        meta: { title: 'School Management', roles: ['super_admin'] }
+      },
+      {
+        path: 'licenses',
+        name: 'SuperAdminLicenses',
+        component: () => import('../views/super-admin/Licenses.vue'),
+        meta: { title: 'License Management', roles: ['super_admin'] }
+      },
+      {
+        path: 'users',
+        name: 'SuperAdminUsers',
+        component: () => import('../views/super-admin/Users.vue'),
+        meta: { title: 'Global User Directory', roles: ['super_admin'] }
+      },
+      {
+        path: 'settings',
+        name: 'SuperAdminSettings',
+        component: () => import('../views/super-admin/Settings.vue'),
+        meta: { title: 'Platform Settings', roles: ['super_admin'] }
+      },
+      {
+        path: 'health',
+        name: 'SuperAdminHealth',
+        component: () => import('../views/super-admin/Health.vue'),
+        meta: { title: 'System Health', roles: ['super_admin'] }
+      },
+      {
+        path: 'logs',
+        name: 'SuperAdminLogs',
+        component: () => import('../views/super-admin/Logs.vue'),
+        meta: { title: 'Activity Logs', roles: ['super_admin'] }
+      },
+      {
+        path: 'backups',
+        name: 'SuperAdminBackups',
+        component: () => import('../views/super-admin/Backups.vue'),
+        meta: { title: 'Backups', roles: ['super_admin'] }
+      },
+      {
+        path: 'announcements',
+        name: 'SuperAdminAnnouncements',
+        component: () => import('../views/super-admin/Announcements.vue'),
+        meta: { title: 'System Announcements', roles: ['super_admin'] }
+      },
+      {
+        path: 'profile',
+        name: 'SuperAdminProfile',
+        component: () => import('../views/super-admin/Profile.vue'),
+        meta: { title: 'My Profile', roles: ['super_admin'] }
+      },
+      {
+        path: 'analytics',
+        name: 'SuperAdminAnalytics',
+        component: () => import('../views/super-admin/Dashboard.vue'),
+        meta: { title: 'Platform Analytics', roles: ['super_admin'] }
+      }
     ]
   },
 

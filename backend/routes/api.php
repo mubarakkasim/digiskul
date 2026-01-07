@@ -278,4 +278,9 @@ Route::prefix('v1')->group(function () {
         Route::post('/sync/bulk', [\App\Http\Controllers\Api\V1\SyncController::class, 'bulk']);
         Route::get('/sync/status/{device_id}', [\App\Http\Controllers\Api\V1\SyncController::class, 'status']);
     });
+
+    // ========================================
+    // SUPER ADMIN ROUTES (Separate File)
+    // ========================================
+    require __DIR__.'/super_admin.php';
 });

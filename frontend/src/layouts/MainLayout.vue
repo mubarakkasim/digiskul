@@ -79,20 +79,7 @@
           </router-link>
         </div>
 
-        <!-- Super Admin Section -->
-        <div v-if="authStore.isSuperAdmin" class="border-t border-blue-800 pt-4">
-          <p class="text-xs uppercase tracking-wider text-yellow-300 px-4 mb-2">System</p>
-          <router-link
-            v-for="item in superAdminMenuItems"
-            :key="item.path"
-            :to="item.path"
-            class="sidebar-link bg-blue-800/50"
-            :class="{ 'active bg-yellow-500/20': $route.path === item.path }"
-          >
-            <component :is="item.icon" class="w-5 h-5" />
-            <span>{{ item.label }}</span>
-          </router-link>
-        </div>
+        <!-- System links removed from here. Super Admins use the dedicated Super Admin Panel. -->
       </nav>
 
       <!-- Footer -->

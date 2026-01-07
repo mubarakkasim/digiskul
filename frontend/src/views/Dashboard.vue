@@ -218,9 +218,11 @@
 import { ref, onMounted } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from '../stores/auth'
+import { useRouter } from 'vue-router'
 import { useToast } from 'vue-toastification'
 
 const authStore = useAuthStore()
+const router = useRouter()
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || 'http://localhost:8000/api/v1'
 const toast = useToast()
 
@@ -231,6 +233,11 @@ const stats = ref({
 })
 
 onMounted(async () => {
+  if (authStore.user?.role === 'super_admin') {
+    router.push('/super-admin/dashboard')
+    return
+  }
+  
   try {
     const response = await axios.get(`${API_BASE_URL}/dashboard/stats`)
     stats.value = response.data.data
